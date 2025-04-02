@@ -1,0 +1,48 @@
+services:
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    privileged: true
+    env_file:
+      - "./.env"
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesresolvers.letsencrypt.acme.email=support@zeroday.pw"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      # DO NOT USE THESE PARAMETERS IN PRODUCTION
+      - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--api.insecure=true" # Dashboard
+      - "--log.level=INFO"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "./acme.json:/acme.json" # todo: store this securely
+    restart: always
+    labels:
+      # Request/check wildcard certificate during startup
+      - "traefik.http.routers.wildcard_dummy.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.wildcard_dummy.tls.domains[0].main=challenge.zeroday.pw"
+      - "traefik.http.routers.wildcard_dummy.tls.domains[0].sans=*.challenge.zeroday.pw"
+
+  # EXAMPLE SERVICE
+  # todo: dynamically start containers
+  testserver:
+    image: traefik/whoami
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testserver.rule=Host(`test.challenge.zeroday.pw`)"
+      - "traefik.http.routers.testserver.entrypoints=websecure"
+      - "traefik.http.routers.testserver.tls.certresolver=letsencrypt"
+      - "traefik.http.services.testserver.loadbalancer.server.port=80"
+    depends_on:
+      - traefik
