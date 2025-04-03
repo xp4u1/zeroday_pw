@@ -22,6 +22,7 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
+    network_mode: bridge
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       - "./acme.json:/acme.json" # todo: store this securely
@@ -32,17 +33,16 @@ services:
       - "traefik.http.routers.wildcard_dummy.tls.domains[0].main=challenge.zeroday.pw"
       - "traefik.http.routers.wildcard_dummy.tls.domains[0].sans=*.challenge.zeroday.pw"
 
-  # EXAMPLE SERVICE
-  # todo: dynamically start containers
-  testserver:
-    image: traefik/whoami
-    expose:
-      - "80"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testserver.rule=Host(`test.challenge.zeroday.pw`)"
-      - "traefik.http.routers.testserver.entrypoints=websecure"
-      - "traefik.http.routers.testserver.tls.certresolver=letsencrypt"
-      - "traefik.http.services.testserver.loadbalancer.server.port=80"
-    depends_on:
-      - traefik
+  # testserver:
+  #   image: traefik/whoami
+  #   expose:
+  #     - "80"
+  #   network_mode: bridge
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.testserver.rule=Host(`test.challenge.zeroday.pw`)"
+  #     - "traefik.http.routers.testserver.entrypoints=websecure"
+  #     - "traefik.http.routers.testserver.tls.certresolver=letsencrypt"
+  #     - "traefik.http.services.testserver.loadbalancer.server.port=80"
+  #   depends_on:
+  #     - traefik
