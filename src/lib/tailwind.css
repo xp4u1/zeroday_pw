@@ -120,6 +120,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Inter";
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
   }
 }
