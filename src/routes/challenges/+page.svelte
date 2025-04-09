@@ -1,8 +1,9 @@
 <script lang="ts">
   import DataTable from "$lib/components/DataTable.svelte";
-  import { createTable } from "svelte-headless-table";
+  import { createRender, createTable } from "svelte-headless-table";
   import { addSortBy } from "svelte-headless-table/plugins";
   import { readable } from "svelte/store";
+  import TableButton from "./TableButton.svelte";
 
   let { data } = $props();
 
@@ -13,6 +14,13 @@
     table.column({
       accessor: "name",
       header: "Name",
+    }),
+    table.column({
+      accessor: "id",
+      header: "",
+      cell: ({ value }) => {
+        return createRender(TableButton, { id: value });
+      },
     }),
     table.column({
       accessor: ({ solves }) => solves.length,

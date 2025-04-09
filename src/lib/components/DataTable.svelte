@@ -33,13 +33,15 @@
                 <Table.Head {...attrs}>
                   <Render of={cell.render()} />
 
-                  <Button
-                    class="ml-2"
-                    variant="ghost"
-                    on:click={props.sort.toggle}
-                  >
-                    <ArrowUpDown class={"h-4 w-4"} />
-                  </Button>
+                  {#if cell.render() !== ""}
+                    <Button
+                      class="ml-2 self-end"
+                      variant="ghost"
+                      on:click={props.sort.toggle}
+                    >
+                      <ArrowUpDown class={"h-4 w-4"} />
+                    </Button>
+                  {/if}
                 </Table.Head>
               </Subscribe>
             {/each}
