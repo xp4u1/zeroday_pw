@@ -5,13 +5,40 @@
 
   let { data } = $props();
 
-  // todo: real logic
-  let loggedIn = $state(false);
-  let activeSession = $state(false);
+  let loggedIn = $state(false); // todo: authentication
+  let loading = $state(false);
+  let containerAddress = $state(null);
 
-  setTimeout(() => {
-    loggedIn = true;
-  }, 5000);
+  const apiRequest = async (action: string) => {
+    const response = await fetch("/api/session", {
+      method: "POST",
+      credentials: "same-origin",
+      body: JSON.stringify({
+        action: action,
+        challengeId: data.challenge.id,
+      }),
+    });
+
+    if (response.status != 200) {
+      console.error(await response.json());
+      throw "Request failed";
+    }
+
+    return response.json();
+  };
+
+  const requestSession = async () => {
+    loading = true;
+    containerAddress = (await apiRequest("request")).address;
+    loading = false;
+  };
+
+  const terminateSession = async () => {
+    loading = true;
+    await apiRequest("terminate");
+    containerAddress = null;
+    loading = false;
+  };
 </script>
 
 <div class="flex w-full justify-center">
@@ -35,26 +62,28 @@
 
     {#if !loggedIn}
       <section class="rounded border p-5">
-        <Button variant="ghost" class="w-full cursor-not-allowed"
-          >Log in to request session</Button
+        <Button
+          variant="ghost"
+          class="w-full cursor-not-allowed"
+          on:click={() => (loggedIn = true)}>Log in to request session</Button
         >
       </section>
-    {:else if activeSession}
+    {:else if containerAddress}
       <section class="flex flex-col gap-5 rounded border p-5">
         <p>You have an active session. Connect here:</p>
         <p>
           <a
             class="text-primary font-medium underline underline-offset-4"
-            href="https://47c1448354804942b3bef56e371b81f7-intro-web.challenge.zeroday.pw"
+            href={containerAddress}
             target="_blank"
-            >47c1448354804942b3bef56e371b81f7-intro-web.challenge.zeroday.pw
+            >{containerAddress}
           </a>
         </p>
 
         <Button
           class="mt-5 w-full cursor-pointer text-white"
           variant="destructive"
-          on:click={() => (activeSession = false)}>Terminate session</Button
+          on:click={() => terminateSession()}>Terminate session</Button
         >
       </section>
     {:else}
@@ -62,8 +91,9 @@
         <p class="mb-5">You have no active sessions.</p>
 
         <Button
+          disabled={loading}
           class="w-full cursor-pointer"
-          on:click={() => (activeSession = true)}>Request session</Button
+          on:click={() => requestSession()}>Request session</Button
         >
       </section>
     {/if}
