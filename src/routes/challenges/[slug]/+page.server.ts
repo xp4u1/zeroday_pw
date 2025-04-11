@@ -4,6 +4,11 @@ import { error } from "@sveltejs/kit";
 export async function load({ params }) {
   const challenge = await db.query.challenges.findFirst({
     where: (challenges, { eq }) => eq(challenges.id, Number(params.slug)),
+    columns: {
+      id: true,
+      name: true,
+      description: true,
+    },
     with: {
       category: true,
       solves: true,
