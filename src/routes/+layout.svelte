@@ -4,7 +4,7 @@
 
   import "../app.css";
 
-  const { children } = $props();
+  const { children, data } = $props();
 
   const links = [
     {
@@ -26,23 +26,38 @@
   <header
     class="bg-background sticky top-0 flex h-16 items-center gap-4 border-b px-4 md:px-6"
   >
-    <nav class="flex flex-row items-center gap-5 text-sm font-medium lg:gap-6">
-      <a
-        href="/"
-        class="flex items-center gap-2 text-lg font-semibold md:text-base"
-      >
-        <Flag class="h-6 w-6" />
-        <span class="sr-only">zeroday.pw</span>
-      </a>
-
-      {#each links as { name, href }}
+    <nav
+      class="flex w-full flex-row items-center justify-between text-sm font-medium"
+    >
+      <div class="flex flex-row items-center gap-5 lg:gap-6">
         <a
-          {href}
-          class={`${page.url.pathname.startsWith(href) ? "text-foreground" : "text-muted-foreground"} hover:text-foreground transition-colors`}
+          href="/"
+          class="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
-          {name}
+          <Flag class="h-6 w-6" />
+          <span class="sr-only">zeroday.pw</span>
         </a>
-      {/each}
+
+        {#each links as { name, href }}
+          <a
+            {href}
+            class={`${page.url.pathname.startsWith(href) ? "text-foreground" : "text-muted-foreground"} hover:text-foreground transition-colors`}
+          >
+            {name}
+          </a>
+        {/each}
+      </div>
+
+      <a
+        href="/account"
+        class="text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {#if data.user}
+          {data.user.username}
+        {:else}
+          Login
+        {/if}
+      </a>
     </nav>
   </header>
 
