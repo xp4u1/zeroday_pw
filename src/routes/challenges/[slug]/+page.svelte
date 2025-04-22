@@ -5,7 +5,6 @@
 
   let { data } = $props();
 
-  let loggedIn = $state(false); // todo: authentication
   let loading = $state(false);
   let containerAddress = $state(null);
 
@@ -60,12 +59,10 @@
       </p>
     </section>
 
-    {#if !loggedIn}
+    {#if !data.loggedIn}
       <section class="rounded border p-5">
-        <Button
-          variant="ghost"
-          class="w-full cursor-not-allowed"
-          on:click={() => (loggedIn = true)}>Log in to request session</Button
+        <Button variant="ghost" class="w-full cursor-not-allowed"
+          >Log in to request session</Button
         >
       </section>
     {:else if containerAddress}
@@ -98,6 +95,6 @@
       </section>
     {/if}
 
-    <Input disabled={!loggedIn} placeholder="Submit flag" />
+    <Input disabled={!data.loggedIn} placeholder="Submit flag" />
   </div>
 </div>

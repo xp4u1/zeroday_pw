@@ -1,27 +1,28 @@
 import { generateContainerName, getDomain } from "$lib/names.js";
 import { db } from "$lib/server/db/index.js";
-import { activeContainers } from "$lib/server/db/schema.js";
+import { activeContainers, users } from "$lib/server/db/schema.js";
 import { createContainer, stopContainer } from "$lib/server/docker.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
-export const POST = async ({ request }) => {
-  // todo: authentication
+export const POST = async ({ request, locals }) => {
+  if (locals.user === null)
+    return json({ message: "User not logged in" }, { status: 403 });
+
   const { action, challengeId } = await request.json();
 
-  // todo: filter containers by user, not just by challenge!
   const container = await db.query.activeContainers.findFirst({
     where: (activeContainers, { eq }) =>
-      eq(activeContainers.challengeId, challengeId),
+      eq(activeContainers.challengeId, challengeId) && eq(activeContainers.userId, locals.user!.id),
   });
 
   switch (action) {
     case "request":
       return container
         ? json({
-            address: container.address,
-          })
-        : await createSession(challengeId);
+          address: container.address,
+        })
+        : await createSession(challengeId, locals.user.id);
 
     case "terminate":
       console.debug(`terminate for challenge: ${challengeId}`);
@@ -40,7 +41,7 @@ export const POST = async ({ request }) => {
   }
 };
 
-const createSession = async (challengeId: string) => {
+const createSession = async (challengeId: string, userId: string) => {
   const challenge = await db.query.challenges.findFirst({
     where: (challenges, { eq }) => eq(challenges.id, Number(challengeId)),
   });
@@ -56,7 +57,7 @@ const createSession = async (challengeId: string) => {
   await db.insert(activeContainers).values({
     dockerId: containerId,
     address: address,
-    userId: 1, // todo: real user id
+    userId: userId,
     challengeId: challenge!.id,
   });
 

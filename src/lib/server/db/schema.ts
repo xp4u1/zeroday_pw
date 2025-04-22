@@ -36,7 +36,7 @@ export const challengesRelations = relations(challenges, ({ one, many }) => ({
 
 export const solves = sqliteTable("solves", {
   id: integer().primaryKey(),
-  userId: integer("user_id").notNull(),
+  userId: text("user_id").notNull(),
   challengeId: integer("challenge_id").notNull(),
   timestamp: text().default(sql`(CURRENT_TIMESTAMP)`),
 });
@@ -56,7 +56,7 @@ export const activeContainers = sqliteTable("active_containers", {
   id: integer().primaryKey(),
   dockerId: text("docker_id").notNull(),
   address: text().notNull(),
-  userId: integer("user_id").notNull(),
+  userId: text("user_id").notNull(),
   challengeId: integer("challenge_id").notNull(),
   timestamp: text().default(sql`(CURRENT_TIMESTAMP)`),
 });

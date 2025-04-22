@@ -1,7 +1,7 @@
 import { db } from "$lib/server/db";
 import { error } from "@sveltejs/kit";
 
-export async function load({ params }) {
+export async function load({ params, locals }) {
   const challenge = await db.query.challenges.findFirst({
     where: (challenges, { eq }) => eq(challenges.id, Number(params.slug)),
     columns: {
@@ -19,5 +19,6 @@ export async function load({ params }) {
 
   return {
     challenge: challenge!,
+    loggedIn: locals.user !== null
   };
 }
