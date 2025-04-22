@@ -1,12 +1,21 @@
 import * as auth from "$lib/server/auth";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
+import { db } from "$lib/server/db";
 
 export const load: PageServerLoad = async (event) => {
   if (!event.locals.user) {
     return redirect(302, "/account/login");
   }
-  return { user: event.locals.user };
+
+  const solves = await db.query.solves.findMany({
+    where: (solves, { eq }) => eq(solves.userId, event.locals.user!.id),
+    with: {
+      challenge: true,
+    },
+  });
+
+  return { user: event.locals.user, solves };
 };
 
 export const actions: Actions = {
