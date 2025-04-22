@@ -11,7 +11,11 @@ export const load: PageServerLoad = async (event) => {
   const solves = await db.query.solves.findMany({
     where: (solves, { eq }) => eq(solves.userId, event.locals.user!.id),
     with: {
-      challenge: true,
+      challenge: {
+        columns: {
+          name: true,
+        },
+      },
     },
   });
 
