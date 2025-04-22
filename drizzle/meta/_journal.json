@@ -22,6 +22,13 @@
       "when": 1745263538632,
       "tag": "0002_panoramic_thundra",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1745328878244,
+      "tag": "0003_cloudy_morlun",
+      "breakpoints": true
     }
   ]
 }
