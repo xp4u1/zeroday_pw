@@ -44,7 +44,7 @@ const createSession = async (challengeId: string) => {
   const challenge = await db.query.challenges.findFirst({
     where: (challenges, { eq }) => eq(challenges.id, Number(challengeId)),
   });
-  if (!challenge) json({ message: "Challenge not found" }, { status: 404 });
+  if (!challenge) return json({ message: "Challenge not found" }, { status: 404 });
 
   const containerName = generateContainerName(challenge!.name);
   const containerId = await createContainer(
