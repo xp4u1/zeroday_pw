@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
   import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
 
-  let { data } = $props();
+  let { data, form } = $props();
 
   let loading = $state(false);
   let containerAddress = $state(null);
@@ -95,6 +96,23 @@
       </section>
     {/if}
 
-    <Input disabled={!data.loggedIn} placeholder="Submit flag" />
+    <form method="post" action="?/solve" use:enhance>
+      <div class="flex flex-row gap-5">
+        <Input
+          name="flag"
+          disabled={!data.loggedIn}
+          placeholder="Submit flag"
+        />
+        <Button disabled={!data.loggedIn} variant="outline" type="submit"
+          >Solve</Button
+        >
+      </div>
+
+      {#if form?.message}
+        <p class="mt-5 text-red-500">
+          {form?.message ?? ""}
+        </p>
+      {/if}
+    </form>
   </div>
 </div>
