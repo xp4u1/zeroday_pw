@@ -2,6 +2,9 @@ import * as auth from "$lib/server/auth";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { db } from "$lib/server/db";
+import { stopContainer } from "$lib/server/docker";
+import { activeContainers } from "$lib/server/db/schema";
+import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
   if (!event.locals.user) {
@@ -27,6 +30,15 @@ export const actions: Actions = {
     if (!event.locals.session) {
       return fail(401);
     }
+
+    const containers = await db
+      .delete(activeContainers)
+      .where(eq(activeContainers.userId, event.locals.user!.id))
+      .returning();
+    await Promise.all(
+      containers.map((container) => stopContainer(container.dockerId)),
+    );
+
     await auth.invalidateSession(event.locals.session.id);
     auth.deleteSessionTokenCookie(event);
 
