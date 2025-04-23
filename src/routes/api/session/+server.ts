@@ -1,6 +1,6 @@
 import { generateContainerName, getDomain } from "$lib/names.js";
 import { db } from "$lib/server/db/index.js";
-import { activeContainers, users } from "$lib/server/db/schema.js";
+import { activeContainers } from "$lib/server/db/schema.js";
 import { createContainer, stopContainer } from "$lib/server/docker.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
@@ -12,16 +12,19 @@ export const POST = async ({ request, locals }) => {
   const { action, challengeId } = await request.json();
 
   const container = await db.query.activeContainers.findFirst({
-    where: (activeContainers, { eq }) =>
-      eq(activeContainers.challengeId, challengeId) && eq(activeContainers.userId, locals.user!.id),
+    where: (activeContainers, { and, eq }) =>
+      and(
+        eq(activeContainers.challengeId, challengeId),
+        eq(activeContainers.userId, locals.user!.id),
+      ),
   });
 
   switch (action) {
     case "request":
       return container
         ? json({
-          address: container.address,
-        })
+            address: container.address,
+          })
         : await createSession(challengeId, locals.user.id);
 
     case "terminate":
@@ -45,7 +48,8 @@ const createSession = async (challengeId: string, userId: string) => {
   const challenge = await db.query.challenges.findFirst({
     where: (challenges, { eq }) => eq(challenges.id, Number(challengeId)),
   });
-  if (!challenge) return json({ message: "Challenge not found" }, { status: 404 });
+  if (!challenge)
+    return json({ message: "Challenge not found" }, { status: 404 });
 
   const containerName = generateContainerName(challenge!.name);
   const containerId = await createContainer(
