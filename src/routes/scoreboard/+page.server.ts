@@ -4,18 +4,21 @@ import { desc } from "drizzle-orm";
 import { error } from "@sveltejs/kit";
 
 export async function load({ locals }) {
-    const players = await db.select({
+    const participants = await db.select({
         name: users.name,
         points: users.points,
     }).from(users)
         .orderBy(desc(users.points));
 
-    if (!players || players.length === 0) {
+    if (!participants || participants.length === 0) {
         throw error(404, "Players not found");
     }
 
     return {
-        players,
+        participants: participants.entries().map(([index, participant]) => ({
+            placement: index + 1,
+            ...participant
+        })).toArray()
     };
 }
 
