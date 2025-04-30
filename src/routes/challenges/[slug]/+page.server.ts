@@ -11,8 +11,16 @@ export async function load({ params, locals }) {
       description: true,
     },
     with: {
-      category: true,
-      solves: true,
+      category: {
+        columns: {
+          name: true,
+        },
+      },
+      solves: {
+        columns: {
+          timestamp: true,
+        },
+      },
     },
   });
   if (!challenge) error(404, "Challenge not found");
