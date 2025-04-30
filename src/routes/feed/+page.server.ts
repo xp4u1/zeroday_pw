@@ -14,6 +14,7 @@ export async function load() {
         },
       },
     },
+    orderBy: (solves, { desc }) => [desc(solves.timestamp)],
   });
 
   return {
