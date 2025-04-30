@@ -3,7 +3,10 @@
  * @param participantCount Overall participant count
  * @param participantPassed Number of participants that passed the challenge
  */
-export const calculatePoints = (participantCount: number, participantPassed: number): number => {
+export const calculatePoints = (
+  participantCount: number,
+  participantPassed: number,
+): number => {
   let multiplicator =
     (Math.E - Math.E ** 0.2) / (1 - Math.E ** -0.8 / participantCount);
   let granted_points =
