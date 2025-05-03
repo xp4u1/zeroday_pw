@@ -31,7 +31,11 @@ export const createContainer = async (containerName: string, image: string) => {
     ExposedPorts: {
       "80/tcp": {},
     },
-    NetworkingConfig: {},
+    NetworkingConfig: {
+      EndpointsConfig: {
+        zeroday: {},
+      },
+    },
   });
 
   await container.start();

@@ -1,8 +1,10 @@
 services:
   traefik:
     image: traefik:v3.3
-    container_name: traefik
+    container_name: zeroday_traefik
     privileged: true
+    networks:
+      - zeroday
     env_file:
       - "./.env"
     command:
@@ -13,7 +15,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.provider=cloudflare"
       - "--certificatesresolvers.letsencrypt.acme.email=support@zeroday.pw"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/certs/acme.json"
       # DO NOT USE THESE PARAMETERS IN PRODUCTION
       - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--api.insecure=true" # Dashboard
@@ -22,10 +24,10 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
-    network_mode: bridge
+    #network_mode: bridge
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
-      - "./acme.json:/acme.json" # todo: store this securely
+      - "certs:/certs"
     restart: always
     labels:
       # Request/check wildcard certificate during startup
@@ -33,16 +35,33 @@ services:
       - "traefik.http.routers.wildcard_dummy.tls.domains[0].main=challenge.zeroday.pw"
       - "traefik.http.routers.wildcard_dummy.tls.domains[0].sans=*.challenge.zeroday.pw"
 
-  # testserver:
-  #   image: traefik/whoami
-  #   expose:
-  #     - "80"
-  #   network_mode: bridge
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.testserver.rule=Host(`test.challenge.zeroday.pw`)"
-  #     - "traefik.http.routers.testserver.entrypoints=websecure"
-  #     - "traefik.http.routers.testserver.tls.certresolver=letsencrypt"
-  #     - "traefik.http.services.testserver.loadbalancer.server.port=80"
-  #   depends_on:
-  #     - traefik
+  portal:
+    image: zeroday/portal
+    container_name: zeroday_portal
+    privileged: true
+    networks:
+      - zeroday
+    environment:
+      - DATABASE_URL=/app/data/prod.db
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "database:/app/data"
+    expose:
+      - "3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portal.rule=Host(`portal.zeroday.pw`)"
+      - "traefik.http.routers.portal.entrypoints=websecure"
+      - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portal.loadbalancer.server.port=3000"
+    depends_on:
+      - traefik
+
+volumes:
+  certs:
+  database:
+
+networks:
+  zeroday:
+    name: zeroday
+    driver: bridge
