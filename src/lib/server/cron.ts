@@ -1,16 +1,18 @@
-import { lt } from "drizzle-orm";
+import { eq, lt, sql } from "drizzle-orm";
 import schedule from "node-schedule";
 import { db } from "./db";
-import { activeContainers } from "./db/schema";
+import * as schema from "./db/schema";
 import { stopContainer } from "./docker";
+import { calculatePoints } from "./points";
 
 /**
  * Remove all existing cronjobs and create a new one
- * to remove unused Docker containers.
+ * to remove unused Docker containers and update points.
  */
 export const setupCron = async () => {
   await schedule.gracefulShutdown();
   schedule.scheduleJob("0 */6 * * * *", garbageCollector);
+  schedule.scheduleJob("0 * * * * *", updateChallengePoints);
 };
 
 /**
@@ -22,8 +24,8 @@ export const garbageCollector = async () => {
   const timestamp = sqliteTimestamp(threeHoursAgo);
 
   const oldContainers = await db
-    .delete(activeContainers)
-    .where(lt(activeContainers.timestamp, timestamp))
+    .delete(schema.activeContainers)
+    .where(lt(schema.activeContainers.timestamp, timestamp))
     .returning();
 
   if (oldContainers.length == 0) return;
@@ -45,4 +47,47 @@ export const garbageCollector = async () => {
  */
 export const sqliteTimestamp = (date: Date): string => {
   return date.toISOString().replace("T", " ").slice(0, 19);
+};
+
+let lastSolvesCount = 0;
+let lastUsersCount = 0;
+
+/**
+ * Update the points for all challenges based on the
+ * current number of solves and users.
+ *
+ * This function checks if the total count of solves and users
+ * has changed since the last update. If there is no change,
+ * it returns early to avoid unnecessary database queries.
+ */
+export const updateChallengePoints = async () => {
+  const solvesCount = await db.$count(schema.solves);
+  const usersCount = await db.$count(schema.users);
+
+  if (solvesCount === lastSolvesCount && usersCount === lastUsersCount) return;
+  lastSolvesCount = solvesCount;
+  lastUsersCount = usersCount;
+
+  const challenges = await db
+    .select({
+      id: schema.challenges.id,
+      solvesCount: sql<number>`count(${schema.solves.id})`,
+    })
+    .from(schema.challenges)
+    .leftJoin(
+      schema.solves,
+      eq(schema.challenges.id, schema.solves.challengeId),
+    )
+    .groupBy(schema.challenges.id);
+
+  await Promise.all(
+    challenges.map((challenge) =>
+      db
+        .update(schema.challenges)
+        .set({
+          points: calculatePoints(usersCount, challenge.solvesCount),
+        })
+        .where(eq(schema.challenges.id, challenge.id)),
+    ),
+  );
 };
