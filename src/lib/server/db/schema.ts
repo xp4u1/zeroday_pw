@@ -22,6 +22,7 @@ export const challenges = sqliteTable("challenges", {
   name: text().unique().notNull(),
   description: text().notNull(),
   flag: text().notNull(),
+  points: integer().notNull(),
   dockerImage: text("docker_image").notNull(),
   categoryId: integer("category_id").notNull(),
 });
