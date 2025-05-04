@@ -1,17 +1,22 @@
 /**
- * Calculate the points granted to participants that pass a challenge.
- * @param participantCount Overall participant count
- * @param participantPassed Number of participants that passed the challenge
+ * Calculate the points granted to users that pass a challenge.
+ * @param usersCount Overall participant count
+ * @param solvesCount Number of users that passed the challenge
  */
 export const calculatePoints = (
-  participantCount: number,
-  participantPassed: number,
+  usersCount: number,
+  solvesCount: number,
 ): number => {
+  if (solvesCount === 0) return 500;
+  if (solvesCount > usersCount)
+    throw Error("solvesCount cannot be greater than usersCount");
+
   let multiplicator =
-    (Math.E - Math.E ** 0.2) / (1 - Math.E ** -0.8 / participantCount);
+    (Math.E - Math.E ** 0.2) / (1 - Math.E ** -0.8 / usersCount);
   let granted_points =
     500 *
-    (Math.log(Math.E - multiplicator * (participantPassed / participantCount)) +
-      (1 - Math.log(Math.E - multiplicator / participantCount)));
-  return Math.trunc(granted_points);
+    (Math.log(Math.E - multiplicator * (solvesCount / usersCount)) +
+      (1 - Math.log(Math.E - multiplicator / usersCount)));
+
+  return Math.round(granted_points);
 };
