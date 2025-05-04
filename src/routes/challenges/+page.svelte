@@ -23,6 +23,10 @@
       },
     }),
     table.column({
+      accessor: ({ points }) => points,
+      header: "Points",
+    }),
+    table.column({
       accessor: ({ solves }) => solves.length,
       header: "Solves",
     }),

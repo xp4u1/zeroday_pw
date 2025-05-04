@@ -5,6 +5,7 @@ export async function load() {
     columns: {
       id: true,
       name: true,
+      points: true,
     },
     with: {
       category: {
