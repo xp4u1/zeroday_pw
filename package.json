@@ -31,6 +31,7 @@
     "@testing-library/svelte": "^5.2.4",
     "@types/better-sqlite3": "^7.6.12",
     "@types/dockerode": "^3.3.37",
+    "@types/luxon": "^3.6.2",
     "@types/node-schedule": "^2.1.7",
     "bits-ui": "0.22.0",
     "clsx": "^2.1.1",
@@ -61,6 +62,7 @@
     "dockerode": "^4.0.5",
     "drizzle-orm": "^0.40.0",
     "lucide-svelte": "^0.487.0",
+    "luxon": "^3.6.1",
     "node-schedule": "^2.1.1",
     "svelte-headless-table": "^0.18.3"
   },
