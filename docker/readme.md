@@ -8,23 +8,9 @@ $ touch .env && vim .env
 CLOUDFLARE_EMAIL=your@email.com
 CLOUDFLARE_DNS_API_TOKEN=top-secret-api-token
 
-# Create an empty certificate database
-$ touch acme.json && chmod 600 acme.json
+# Create the database
+$ docker compose run portal node scripts/setup.js
 
-# Start proxy
+# Start proxy and portal
 $ docker compose up
-```
-
-# Idea
-
-```
-portal.zeroday.pw
-  /    -> React application
-  /api -> Express Backend
-
-*.challenge.zeroday.pw
-  challenge containers, dynamically assigned
-
-          zeroday.pw -> portal.zeroday.pw (redirect)
-challenge.zeroday.pw -> portal.zeroday.pw (redirect)
 ```
