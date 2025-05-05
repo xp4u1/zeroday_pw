@@ -1,7 +1,8 @@
+name: zeroday
+
 services:
   traefik:
     image: traefik:v3.3
-    container_name: zeroday_traefik
     privileged: true
     networks:
       - zeroday
@@ -16,15 +17,13 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.provider=cloudflare"
       - "--certificatesresolvers.letsencrypt.acme.email=support@zeroday.pw"
       - "--certificatesresolvers.letsencrypt.acme.storage=/certs/acme.json"
-      # DO NOT USE THESE PARAMETERS IN PRODUCTION
-      - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--api.insecure=true" # Dashboard
-      - "--log.level=INFO"
+      - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
+      # Change the line above to use the staging servers to test Let's Encrypt
+      # See https://doc.traefik.io/traefik/https/acme/#lets-encrypt
+      # - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
-    #network_mode: bridge
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       - "certs:/certs"
@@ -34,10 +33,25 @@ services:
       - "traefik.http.routers.wildcard_dummy.tls.certresolver=letsencrypt"
       - "traefik.http.routers.wildcard_dummy.tls.domains[0].main=challenge.zeroday.pw"
       - "traefik.http.routers.wildcard_dummy.tls.domains[0].sans=*.challenge.zeroday.pw"
+      # Redirect "zeroday.pw" to "portal.zeroday.pw"
+      - "traefik.http.routers.redirect_top.rule=Host(`zeroday.pw`)"
+      - "traefik.http.routers.redirect_top.entrypoints=websecure"
+      - "traefik.http.routers.redirect_top.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.redirect_top.middlewares=redirect_top"
+      - "traefik.http.middlewares.redirect_top.redirectregex.regex=^https://zeroday.pw/(.*)"
+      - "traefik.http.middlewares.redirect_top.redirectregex.replacement=https://portal.zeroday.pw/$${1}"
+      - "traefik.http.middlewares.redirect_top.redirectregex.permanent=true"
+      # Redirect "challenge.zeroday.pw" to "portal.zeroday.pw"
+      - "traefik.http.routers.redirect_challenge.rule=Host(`zeroday.pw`)"
+      - "traefik.http.routers.redirect_challenge.entrypoints=websecure"
+      - "traefik.http.routers.redirect_challenge.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.redirect_challenge.middlewares=redirect_top"
+      - "traefik.http.middlewares.redirect_challenge.redirectregex.regex=^https://challenge.zeroday.pw/(.*)"
+      - "traefik.http.middlewares.redirect_challenge.redirectregex.replacement=https://portal.zeroday.pw/$${1}"
+      - "traefik.http.middlewares.redirect_challenge.redirectregex.permanent=true"
 
   portal:
-    image: zeroday/portal
-    container_name: zeroday_portal
+    image: zeroday_portal
     privileged: true
     networks:
       - zeroday
