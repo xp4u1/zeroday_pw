@@ -109,7 +109,7 @@ export const updateChallengePoints = async () => {
       db
         .update(schema.users)
         .set({
-          points: user.totalPoints,
+          points: user.totalPoints || 0,
         })
         .where(eq(schema.users.id, user.id)),
     ),
