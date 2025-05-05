@@ -29,6 +29,9 @@ importers:
       lucide-svelte:
         specifier: ^0.487.0
         version: 0.487.0(svelte@5.25.7)
+      luxon:
+        specifier: ^3.6.1
+        version: 3.6.1
       node-schedule:
         specifier: ^2.1.1
         version: 2.1.1
@@ -72,6 +75,9 @@ importers:
       '@types/dockerode':
         specifier: ^3.3.37
         version: 3.3.37
+      '@types/luxon':
+        specifier: ^3.6.2
+        version: 3.6.2
       '@types/node-schedule':
         specifier: ^2.1.7
         version: 2.1.7
@@ -1204,6 +1210,9 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/luxon@3.6.2':
+    resolution: {integrity: sha512-R/BdP7OxEMc44l2Ex5lSXHoIXTB2JLNa3y2QISIbr58U/YcsffyQrYW//hZSdrfxrjRZj3GcUoxMPGdO8gSYuw==}
 
   '@types/node-schedule@2.1.7':
     resolution: {integrity: sha512-G7Z3R9H7r3TowoH6D2pkzUHPhcJrDF4Jz1JOQ80AX0K2DWTHoN9VC94XzFAPNMdbW9TBzMZ3LjpFi7RYdbxtXA==}
@@ -3658,6 +3667,8 @@ snapshots:
   '@types/estree@1.0.7': {}
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/luxon@3.6.2': {}
 
   '@types/node-schedule@2.1.7':
     dependencies:

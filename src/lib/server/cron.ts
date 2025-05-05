@@ -1,9 +1,11 @@
 import { eq, lt, sql } from "drizzle-orm";
 import schedule from "node-schedule";
+import { DateTime } from "luxon";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { stopContainer } from "./docker";
 import { calculatePoints } from "./points";
+import { timestampFormat } from "$lib/timestamp";
 
 /**
  * Remove all existing cronjobs and create a new one
@@ -20,8 +22,10 @@ export const setupCron = async () => {
  * three hours ago.
  */
 export const garbageCollector = async () => {
-  const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000);
-  const timestamp = sqliteTimestamp(threeHoursAgo);
+  const timestamp = DateTime.now()
+    .toUTC()
+    .minus({ hours: 3 })
+    .toFormat(timestampFormat);
 
   const oldContainers = await db
     .delete(schema.activeContainers)
@@ -37,16 +41,6 @@ export const garbageCollector = async () => {
   console.log(
     `[Garbage Collector] Removed ${oldContainers.length} containers.`,
   );
-};
-
-/**
- * Convert a JS date to the sqlite format:
- * `YYYY-MM-DD HH:MM:SS`
- * @param date Date you want to convert
- * @returns ISO-like string in UTC time
- */
-export const sqliteTimestamp = (date: Date): string => {
-  return date.toISOString().replace("T", " ").slice(0, 19);
 };
 
 let lastSolvesCount = 0;
