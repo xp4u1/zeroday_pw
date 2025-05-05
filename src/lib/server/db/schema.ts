@@ -5,7 +5,7 @@ export const users = sqliteTable("users", {
   id: text().primaryKey(),
   name: text().unique().notNull(),
   passwordHash: text("password_hash").notNull(),
-  points: integer(),
+  points: integer().notNull().default(0),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -23,7 +23,7 @@ export const challenges = sqliteTable("challenges", {
   name: text().unique().notNull(),
   description: text().notNull(),
   flag: text().notNull(),
-  points: integer().notNull(),
+  points: integer().notNull().default(500),
   dockerImage: text("docker_image").notNull(),
   categoryId: integer("category_id").notNull(),
 });
