@@ -12,7 +12,7 @@ import { calculatePoints } from "./points";
 export const setupCron = async () => {
   await schedule.gracefulShutdown();
   schedule.scheduleJob("0 */6 * * * *", garbageCollector);
-  schedule.scheduleJob("0 * * * * *", updateChallengePoints);
+  schedule.scheduleJob("*/2 * * * * *", updateChallengePoints);
 };
 
 /**
@@ -53,8 +53,8 @@ let lastSolvesCount = 0;
 let lastUsersCount = 0;
 
 /**
- * Update the points for all challenges based on the
- * current number of solves and users.
+ * Update the points for all challenges and users based on
+ * the current number of solves and total number of users.
  *
  * This function checks if the total count of solves and users
  * has changed since the last update. If there is no change,
@@ -88,6 +88,30 @@ export const updateChallengePoints = async () => {
           points: calculatePoints(usersCount, challenge.solvesCount),
         })
         .where(eq(schema.challenges.id, challenge.id)),
+    ),
+  );
+
+  const users = await db
+    .select({
+      id: schema.users.id,
+      totalPoints: sql<number>`SUM(${schema.challenges.points})`,
+    })
+    .from(schema.users)
+    .leftJoin(schema.solves, eq(schema.users.id, schema.solves.userId))
+    .leftJoin(
+      schema.challenges,
+      eq(schema.challenges.id, schema.solves.challengeId),
+    )
+    .groupBy(schema.users.id);
+
+  await Promise.all(
+    users.map((user) =>
+      db
+        .update(schema.users)
+        .set({
+          points: user.totalPoints,
+        })
+        .where(eq(schema.users.id, user.id)),
     ),
   );
 };
