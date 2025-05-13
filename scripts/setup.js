@@ -11,5 +11,14 @@ console.log(`Create database schema from "${schema_file}"`);
 const client = new Database(database_url);
 const sqlScript = fs.readFileSync(schema_file).toString();
 
-client.exec(sqlScript);
-console.log(`Initialized "${database_url}"`);
+try {
+  client.exec(sqlScript);
+  console.log(`Initialized "${database_url}"`);
+} catch (error) {
+  if (error.message.includes("already exists")) {
+    console.error(`Failed to create new tables in "${database_url}"`);
+    console.error("Skipping setup...");
+  } else {
+    throw error;
+  }
+}
