@@ -4,6 +4,7 @@ FROM node:22-alpine AS builder
 
 ENV DATABASE_URL=/app/prod.db
 RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache cmake
 
 WORKDIR /app
 COPY . .
