@@ -1,0 +1,5 @@
+apiVersion: v2
+name: challenge
+description: Secure deployment for CTF challenge containers
+type: application
+version: 0.1.0
