@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.challenge_id }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.challenge_id }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.challenge_id }}
+    spec:
+      serviceAccountName: restricted-sa
+      automountServiceAccountToken: false
+      containers:
+        - name: challenge
+          image: "{{ .Values.image }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.port }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          securityContext:
+            runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            allowPrivilegeEscalation:
+              {{ .Values.securityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
+            capabilities:
+              drop: {{ .Values.securityContext.capabilities.drop }}
+            seccompProfile:
+              type: {{ .Values.securityContext.seccompProfile.type }}
