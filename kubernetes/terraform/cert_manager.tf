@@ -27,6 +27,17 @@ module "cert_manager" {
     }
   ]
 
+  additional_set = [
+    {
+      name  = "extraArgs[0]"
+      value = "--dns01-recursive-nameservers=1.1.1.1:53\\,8.8.8.8:53"
+    },
+    {
+      name  = "extraArgs[1]"
+      value = "--dns01-recursive-nameservers-only"
+    }
+  ]
+
   certificates = {
     "zeroday" = {
       dns_names   = [var.domain]
