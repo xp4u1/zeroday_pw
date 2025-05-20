@@ -45,7 +45,7 @@
   <div class="flex w-full max-w-4xl flex-col gap-5">
     <section class="flex flex-col gap-5 rounded border p-5">
       <h2
-        class="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight"
+        class="scroll-m-20 border-b pb-2 font-mono text-3xl font-semibold tracking-tight"
       >
         {data.challenge.name}
       </h2>
@@ -90,7 +90,7 @@
 
         <Button
           disabled={loading}
-          class="w-full cursor-pointer"
+          class="w-full cursor-pointer "
           on:click={() => requestSession()}>Request session</Button
         >
       </section>

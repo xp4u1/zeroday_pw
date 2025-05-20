@@ -1,1 +1,6 @@
 @import "$lib/tailwind.css";
+
+:root {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Noto Sans Mono", monospace;
+}
