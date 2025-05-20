@@ -1,6 +1,8 @@
 node_modules
 docker
 docs
+kubernetes
+!kubernetes/helm
 
 # Output
 .output
