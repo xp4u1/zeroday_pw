@@ -3,13 +3,13 @@ import schedule from "node-schedule";
 import { DateTime } from "luxon";
 import { db } from "./db";
 import * as schema from "./db/schema";
-import { stopContainer } from "./docker";
+import { stopSandbox } from "./kubernetes";
 import { calculatePoints } from "./points";
 import { timestampFormat } from "$lib/timestamp";
 
 /**
  * Remove all existing cronjobs and create a new one
- * to remove unused Docker containers and update points.
+ * to remove unused sandboxes and update points.
  */
 export const setupCron = async () => {
   await schedule.gracefulShutdown();
@@ -18,7 +18,7 @@ export const setupCron = async () => {
 };
 
 /**
- * Removes all Docker containers that were created more than
+ * Removes all sandboxes that were created more than
  * three hours ago.
  */
 export const garbageCollector = async () => {
@@ -27,20 +27,18 @@ export const garbageCollector = async () => {
     .minus({ hours: 3 })
     .toFormat(timestampFormat);
 
-  const oldContainers = await db
-    .delete(schema.activeContainers)
-    .where(lt(schema.activeContainers.timestamp, timestamp))
+  const oldSandboxes = await db
+    .delete(schema.activeSandboxes)
+    .where(lt(schema.activeSandboxes.timestamp, timestamp))
     .returning();
 
-  if (oldContainers.length == 0) return;
+  if (oldSandboxes.length == 0) return;
 
   await Promise.all(
-    oldContainers.map((container) => stopContainer(container.dockerId)),
+    oldSandboxes.map((sandbox) => stopSandbox(sandbox.helmName)),
   );
 
-  console.log(
-    `[Garbage Collector] Removed ${oldContainers.length} containers.`,
-  );
+  console.log(`[Garbage Collector] Removed ${oldSandboxes.length} sandboxes.`);
 };
 
 let lastSolvesCount = 0;

@@ -2,8 +2,8 @@ import * as auth from "$lib/server/auth";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { db } from "$lib/server/db";
-import { stopContainer } from "$lib/server/docker";
-import { activeContainers } from "$lib/server/db/schema";
+import { stopSandbox } from "$lib/server/kubernetes";
+import { activeSandboxes } from "$lib/server/db/schema";
 import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -31,12 +31,12 @@ export const actions: Actions = {
       return fail(401);
     }
 
-    const containers = await db
-      .delete(activeContainers)
-      .where(eq(activeContainers.userId, event.locals.user!.id))
+    const sandboxes = await db
+      .delete(activeSandboxes)
+      .where(eq(activeSandboxes.userId, event.locals.user!.id))
       .returning();
     await Promise.all(
-      containers.map((container) => stopContainer(container.dockerId)),
+      sandboxes.map((sandbox) => stopSandbox(sandbox.helmName)),
     );
 
     await auth.invalidateSession(event.locals.session.id);

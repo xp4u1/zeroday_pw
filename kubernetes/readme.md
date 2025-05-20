@@ -2,7 +2,11 @@
 
 ```bash
 # Start cluster
-minikube start --cni=calico --memory 8192 --cpus 6
+$ minikube start --cni=calico --memory 8192 --cpus 6
+
+# Deploy using Terraform
+$ cd terraform
+$ terraform apply
 ```
 
 ## Creating challenges
@@ -10,9 +14,6 @@ minikube start --cni=calico --memory 8192 --cpus 6
 ```bash
 # Import local images
 minikube image load challenges/your_challenge
-
-# ???
-make install
 ```
 
 ### Resource limits
