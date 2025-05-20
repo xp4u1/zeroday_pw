@@ -21,6 +21,8 @@ resource "kubernetes_persistent_volume_claim" "portal_database" {
       }
     }
   }
+
+  depends_on = [kubernetes_namespace.zeroday_namespace]
 }
 
 resource "kubernetes_deployment" "portal" {
@@ -49,6 +51,8 @@ resource "kubernetes_deployment" "portal" {
       }
 
       spec {
+        service_account_name = kubernetes_service_account.portal.metadata[0].name
+
         volume {
           name = "database"
 
@@ -97,6 +101,8 @@ resource "kubernetes_deployment" "portal" {
       }
     }
   }
+
+  depends_on = [kubernetes_namespace.zeroday_namespace, kubernetes_service_account.portal]
 }
 
 resource "kubernetes_service" "portal" {
@@ -118,6 +124,8 @@ resource "kubernetes_service" "portal" {
 
     type = "ClusterIP"
   }
+
+  depends_on = [kubernetes_namespace.zeroday_namespace]
 }
 
 resource "kubernetes_ingress_v1" "portal" {
@@ -157,4 +165,33 @@ resource "kubernetes_ingress_v1" "portal" {
       secret_name = "portal-tls"
     }
   }
+
+  depends_on = [kubernetes_namespace.zeroday_namespace]
+}
+
+resource "kubernetes_service_account" "portal" {
+  metadata {
+    name      = "zeroday-admin"
+    namespace = var.namespace
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "portal" {
+  metadata {
+    name = kubernetes_service_account.portal.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.portal.metadata[0].name
+    namespace = var.namespace
+  }
+
+  role_ref {
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+    api_group = "rbac.authorization.k8s.io"
+  }
+
+  depends_on = [kubernetes_namespace.zeroday_namespace, kubernetes_service_account.portal]
 }
