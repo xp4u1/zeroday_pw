@@ -1,6 +1,4 @@
-challenge_id: imageflux-7118e514e164759b4ba606000a67697
 image: challenges/imageflux
-
 port: 80
 domain_suffix: challenge.zeroday.pw
 resources:
