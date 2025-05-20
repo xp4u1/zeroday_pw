@@ -1,8 +1,6 @@
-challenge_id: replace-me
 image: replace-me
-
 port: 80
-domain_suffix: challenges.zeroday.pw
+domain_suffix: challenge.zeroday.pw
 resources:
   requests:
     cpu: "100m"
