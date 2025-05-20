@@ -10,7 +10,7 @@ export const users = sqliteTable("users", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   solves: many(solves),
-  activeContainers: many(activeContainers),
+  activeSandboxes: many(activeSandboxes),
 }));
 
 export const categories = sqliteTable("categories", {
@@ -24,7 +24,7 @@ export const challenges = sqliteTable("challenges", {
   description: text().notNull(),
   flag: text().notNull(),
   points: integer().notNull().default(500),
-  dockerImage: text("docker_image").notNull(),
+  helmValues: text("helm_values").notNull(),
   categoryId: integer("category_id").notNull(),
 });
 
@@ -54,24 +54,24 @@ export const solvesRelations = relations(solves, ({ one }) => ({
   }),
 }));
 
-export const activeContainers = sqliteTable("active_containers", {
+export const activeSandboxes = sqliteTable("active_sandboxes", {
   id: integer().primaryKey(),
-  dockerId: text("docker_id").notNull(),
+  helmName: text("helm_name").notNull(),
   address: text().notNull(),
   userId: text("user_id").notNull(),
   challengeId: integer("challenge_id").notNull(),
   timestamp: text().default(sql`(CURRENT_TIMESTAMP)`),
 });
 
-export const activeContainersRelations = relations(
-  activeContainers,
+export const activeSandboxesRelations = relations(
+  activeSandboxes,
   ({ one }) => ({
     user: one(users, {
-      fields: [activeContainers.userId],
+      fields: [activeSandboxes.userId],
       references: [users.id],
     }),
     challenge: one(challenges, {
-      fields: [activeContainers.challengeId],
+      fields: [activeSandboxes.challengeId],
       references: [challenges.id],
     }),
   }),
@@ -89,5 +89,5 @@ export type User = typeof users.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Challenge = typeof challenges.$inferSelect;
 export type Solve = typeof solves.$inferSelect;
-export type ActiveContainer = typeof categories.$inferSelect;
+export type ActiveSandbox = typeof activeSandboxes.$inferSelect;
 export type Session = typeof sessions.$inferSelect;

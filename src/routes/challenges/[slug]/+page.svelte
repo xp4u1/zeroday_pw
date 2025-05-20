@@ -7,7 +7,7 @@
   let { data, form } = $props();
 
   let loading = $state(false);
-  let containerAddress = $state(null);
+  let sandboxAddress = $state(null);
 
   const apiRequest = async (action: string) => {
     const response = await fetch("/api/session", {
@@ -29,14 +29,14 @@
 
   const requestSession = async () => {
     loading = true;
-    containerAddress = (await apiRequest("request")).address;
+    sandboxAddress = (await apiRequest("request")).address;
     loading = false;
   };
 
   const terminateSession = async () => {
     loading = true;
     await apiRequest("terminate");
-    containerAddress = null;
+    sandboxAddress = null;
     loading = false;
   };
 </script>
@@ -66,15 +66,15 @@
           >Log in to request session</Button
         >
       </section>
-    {:else if containerAddress}
+    {:else if sandboxAddress}
       <section class="flex flex-col gap-5 rounded border p-5">
         <p>You have an active session. Connect here:</p>
         <p>
           <a
             class="text-primary font-medium underline underline-offset-4"
-            href={containerAddress}
+            href={sandboxAddress}
             target="_blank"
-            >{containerAddress}
+            >{sandboxAddress}
           </a>
         </p>
 
