@@ -9,10 +9,8 @@
 
 <Card.Root class="mx-auto max-w-3xl">
   <Card.Header>
-    <Card.Title class="text-2xl">Hey {data.user.username}!</Card.Title>
-    <Card.Description
-      >Welcome to your profile page. Here you can see your progress and manage
-      your account</Card.Description
+    <Card.Title class="font-mono text-3xl font-semibold tracking-tight"
+      >Hey {data.user.username}!</Card.Title
     >
   </Card.Header>
   <Card.Content class="flex flex-col gap-5">
