@@ -87,6 +87,6 @@ export const actions: Actions = {
       });
     }
 
-    return redirect(302, "/challenges");
+    return redirect(302, "/account");
   },
 };
