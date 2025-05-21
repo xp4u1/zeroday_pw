@@ -38,7 +38,7 @@
       </div>
       <div class="grid gap-2">
         <div class="flex items-center">
-          <Label for="password">Password</Label>
+          <Label for="password">Passwort</Label>
         </div>
         <Input id="password" name="password" type="password" required />
       </div>
@@ -46,6 +46,17 @@
       {#if mode == "login"}
         <Button type="submit" class="w-full">Login</Button>
       {:else}
+        <div class="grid gap-2">
+          <div class="flex items-center">
+            <Label for="password_wdh">Passwortbestätigung</Label>
+          </div>
+          <Input
+            id="password_wdh"
+            name="password_wdh"
+            type="password"
+            required
+          />
+        </div>
         <Button formaction="?/register" type="submit" class="w-full"
           >Register</Button
         >

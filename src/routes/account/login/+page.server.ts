@@ -61,12 +61,16 @@ export const actions: Actions = {
     const formData = await event.request.formData();
     const username = formData.get("username");
     const password = formData.get("password");
+    const password_wdh = formData.get("password_wdh");
 
     if (!validateUsername(username)) {
       return fail(400, { message: "Invalid username" });
     }
     if (!validatePassword(password)) {
       return fail(400, { message: "Invalid password" });
+    }
+    if (!(password === password_wdh)) {
+      return fail(400, { message: "passwords are not the same" });
     }
 
     const userId = crypto.randomUUID();
