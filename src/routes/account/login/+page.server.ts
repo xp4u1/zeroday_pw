@@ -61,7 +61,7 @@ export const actions: Actions = {
     const formData = await event.request.formData();
     const username = formData.get("username");
     const password = formData.get("password");
-    const password_wdh = formData.get("password_wdh");
+    const passwordWdh = formData.get("passwordWdh");
 
     if (!validateUsername(username)) {
       return fail(400, { message: "Invalid username" });
@@ -69,7 +69,7 @@ export const actions: Actions = {
     if (!validatePassword(password)) {
       return fail(400, { message: "Invalid password" });
     }
-    if (!(password === password_wdh)) {
+    if (!(password === passwordWdh)) {
       return fail(400, { message: "passwords are not the same" });
     }
 
@@ -103,7 +103,7 @@ function validateUsername(username: unknown): username is string {
     typeof username === "string" &&
     username.length >= 3 &&
     username.length <= 31 &&
-    /^[a-z0-9_-]+$/.test(username)
+    /^[a-zA-Z0-9_-]+$/.test(username)
   );
 }
 

@@ -48,14 +48,9 @@
       {:else}
         <div class="grid gap-2">
           <div class="flex items-center">
-            <Label for="password_wdh">Passwortbestätigung</Label>
+            <Label for="passwordWdh">Passwortbestätigung</Label>
           </div>
-          <Input
-            id="password_wdh"
-            name="password_wdh"
-            type="password"
-            required
-          />
+          <Input id="passwordWdh" name="passwordWdh" type="password" required />
         </div>
         <Button formaction="?/register" type="submit" class="w-full"
           >Register</Button
