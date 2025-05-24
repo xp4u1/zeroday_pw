@@ -4,7 +4,6 @@ import { timestampFormat } from "$lib/timestamp";
 import { desc, eq, inArray } from "drizzle-orm";
 import { DateTime } from "luxon";
 
-
 export async function load() {
   const participants = await db
     .select({
@@ -35,30 +34,30 @@ export async function load() {
     .from(solves)
     .innerJoin(challenges, eq(solves.challengeId, challenges.id))
     .where(inArray(solves.userId, userIds));
-  
+
   const userSolvesMap = new Map<string, { x: string; y: number }[]>();
 
-    for (const { id: userId } of top5) {
-      const solvesForUser = penis
-        .filter((solve) => solve.userId === userId && solve.timestamp !== null)
-        .sort((a, b) =>
+  for (const { id: userId } of top5) {
+    const solvesForUser = penis
+      .filter((solve) => solve.userId === userId && solve.timestamp !== null)
+      .sort(
+        (a, b) =>
           DateTime.fromFormat(a.timestamp!, timestampFormat).toMillis() -
-          DateTime.fromFormat(b.timestamp!, timestampFormat).toMillis()
-        );
-    
-      let cumulativePoints = 0;
-    
-      const timeSeries = solvesForUser.map(({ timestamp, points }) => {
-        cumulativePoints += points;
-        return {
-          x: DateTime.fromFormat(timestamp!, timestampFormat).toISO()!,
-          y: cumulativePoints,
-        };
-      });
-    
-      userSolvesMap.set(userId, timeSeries);
-    }
-    
+          DateTime.fromFormat(b.timestamp!, timestampFormat).toMillis(),
+      );
+
+    let cumulativePoints = 0;
+
+    const timeSeries = solvesForUser.map(({ timestamp, points }) => {
+      cumulativePoints += points;
+      return {
+        x: DateTime.fromFormat(timestamp!, timestampFormat).toISO()!,
+        y: cumulativePoints,
+      };
+    });
+
+    userSolvesMap.set(userId, timeSeries);
+  }
 
   return {
     participants: participants
