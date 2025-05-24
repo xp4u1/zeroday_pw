@@ -4,11 +4,6 @@ import { timestampFormat } from "$lib/timestamp";
 import { desc, eq, inArray } from "drizzle-orm";
 import { DateTime } from "luxon";
 
-interface DataPoint {
-  timestamp: string;
-  points: number;
-}
-
 interface User {
   id: string;
   name: string;
@@ -18,7 +13,7 @@ interface User {
  * Search all solves for a list of users and create a time series
  * with cumulative points after each solve.
  * @param users List of users to include in the data set
- * @returns Data series mapped by its corresponding user
+ * @returns Time series mapped by its corresponding user
  */
 async function createDataSeries(users: User[]) {
   const solvesData = await db
@@ -36,11 +31,9 @@ async function createDataSeries(users: User[]) {
       ),
     );
 
-  const dataSet = new Map<string, DataPoint[]>();
-
-  for (const { id: userId } of users) {
+  const series = users.map((user) => {
     const solvesForUser = solvesData
-      .filter((solve) => solve.userId === userId && solve.timestamp !== null)
+      .filter((solve) => solve.userId === user.id && solve.timestamp !== null)
       .sort(
         (a, b) =>
           DateTime.fromFormat(a.timestamp!, timestampFormat).toMillis() -
@@ -53,15 +46,20 @@ async function createDataSeries(users: User[]) {
       cumulativePoints += points;
 
       return {
-        timestamp: DateTime.fromFormat(timestamp!, timestampFormat).toISO()!,
-        points: cumulativePoints,
+        x: DateTime.fromFormat(timestamp!, timestampFormat, {
+          zone: "utc",
+        }).toISO()!,
+        y: cumulativePoints,
       };
     });
 
-    dataSet.set(userId, timeSeries);
-  }
+    return {
+      name: user.name,
+      data: timeSeries,
+    };
+  });
 
-  return dataSet;
+  return series;
 }
 
 export async function load() {
@@ -75,7 +73,7 @@ export async function load() {
     .orderBy(desc(users.points));
 
   const top5 = participants.slice(0, 5);
-  const dataSet = await createDataSeries(top5);
+  const series = await createDataSeries(top5);
 
   return {
     participants: participants
@@ -85,12 +83,6 @@ export async function load() {
         ...participant,
       }))
       .toArray(),
-    series: top5.map((user) => ({
-      name: user.name,
-      data: dataSet.get(user.id)?.map(({ timestamp, points }) => ({
-        x: timestamp,
-        y: points,
-      })),
-    })),
+    series: series,
   };
 }

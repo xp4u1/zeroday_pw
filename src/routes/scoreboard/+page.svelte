@@ -16,12 +16,8 @@
       zoom: { enabled: false },
     },
     stroke: {
-      width: 5,
+      width: 3,
       curve: "straight",
-    },
-    title: {
-      text: "Top 5 User: Punkteverlauf über Zeit",
-      align: "left",
     },
     xaxis: {
       type: "datetime",
