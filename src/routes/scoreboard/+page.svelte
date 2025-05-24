@@ -63,35 +63,5 @@
   ]);
 </script>
 
-<div class="flex-container">
-  <div class="chart-box"></div>
-  <div class="table-box"></div>
-</div>
-
 <Apexchart {options} {series} />
-
 <DataTable {table} {columns} />
-
-<style>
-  .flex-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px;
-    flex-wrap: wrap;
-    padding: 1rem;
-  }
-
-  .chart-box {
-    flex: 1 1 600px;
-    max-width: 800px;
-    min-width: 300px;
-  }
-
-  .table-box {
-    flex: 1 1 300px;
-    max-width: 400px;
-    min-width: 280px;
-  }
-</style>
