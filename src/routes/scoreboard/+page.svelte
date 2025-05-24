@@ -8,9 +8,12 @@
 
   let { data } = $props();
 
-  const series = data.top5.map((user) => ({
+  const series: any = data.top5.map((user) => ({
     name: user.name,
-    data: data.dataSet.get(user.id) ?? [],
+    data: data.dataSet.get(user.id)?.map(({ timestamp, points }) => ({
+      x: timestamp,
+      y: points,
+    })),
   }));
 
   const options: ApexOptions = {

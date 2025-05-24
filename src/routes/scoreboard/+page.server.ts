@@ -4,41 +4,38 @@ import { timestampFormat } from "$lib/timestamp";
 import { desc, eq, inArray } from "drizzle-orm";
 import { DateTime } from "luxon";
 
+interface DataPoint {
+  timestamp: string;
+  points: number;
+}
+
 export async function load() {
   const participants = await db
     .select({
+      id: users.id,
       name: users.name,
       points: users.points,
     })
     .from(users)
     .orderBy(desc(users.points));
 
-  const top5 = await db
-    .select({
-      name: users.name,
-      id: users.id,
-    })
-    .from(users)
-    .orderBy(desc(users.points))
-    .limit(5);
+  const top5 = participants.slice(0, 5);
+  const top5Ids = top5.map((user) => user.id);
 
-  const userIds = top5.map((u) => u.id);
-
-  const penis = await db
+  const solvesData = await db
     .select({
       userId: solves.userId,
       timestamp: solves.timestamp,
-      pointsChallenge: challenges.points,
       points: challenges.points,
     })
     .from(solves)
     .innerJoin(challenges, eq(solves.challengeId, challenges.id))
-    .where(inArray(solves.userId, userIds));
+    .where(inArray(solves.userId, top5Ids));
 
-  const userSolvesMap = new Map<string, { x: string; y: number }[]>();
+  const dataSet = new Map<string, DataPoint[]>();
 
   for (const { id: userId } of top5) {
-    const solvesForUser = penis
+    const solvesForUser = solvesData
       .filter((solve) => solve.userId === userId && solve.timestamp !== null)
       .sort(
         (a, b) =>
@@ -50,13 +47,14 @@ export async function load() {
 
     const timeSeries = solvesForUser.map(({ timestamp, points }) => {
       cumulativePoints += points;
+
       return {
-        x: DateTime.fromFormat(timestamp!, timestampFormat).toISO()!,
-        y: cumulativePoints,
+        timestamp: DateTime.fromFormat(timestamp!, timestampFormat).toISO()!,
+        points: cumulativePoints,
       };
     });
 
-    userSolvesMap.set(userId, timeSeries);
+    dataSet.set(userId, timeSeries);
   }
 
   return {
@@ -68,8 +66,6 @@ export async function load() {
       }))
       .toArray(),
     top5: top5,
-    userIds: userIds,
-    dataSet: userSolvesMap,
-    penis: penis,
+    dataSet: dataSet,
   };
 }
