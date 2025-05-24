@@ -18,12 +18,10 @@
   onMount(async () => {
     const ApexCharts = (await import("apexcharts")).default;
 
-    // Fallback: falls keine options übergeben wurden
     if (!props.options) {
-      console.error(
-        "Apexchart: 'options' ist undefined. Übergib mindestens chart: { type: ... } und series.",
+      throw new Error(
+        "Missing 'options'. You need to specify a configuration for ApexCharts",
       );
-      return;
     }
 
     const finalOptions: ApexOptions = {
@@ -32,8 +30,7 @@
     };
 
     if (!finalOptions.chart) {
-      console.error("Apexchart: 'chart' fehlt in den Optionen.");
-      return;
+      throw new Error("Missing 'chart' configuration in options");
     }
 
     const chart = new ApexCharts(chartContainer, finalOptions);
