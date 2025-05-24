@@ -9,19 +9,18 @@ interface DataPoint {
   points: number;
 }
 
-export async function load() {
-  const participants = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      points: users.points,
-    })
-    .from(users)
-    .orderBy(desc(users.points));
+interface User {
+  id: string;
+  name: string;
+}
 
-  const top5 = participants.slice(0, 5);
-  const top5Ids = top5.map((user) => user.id);
-
+/**
+ * Search all solves for a list of users and create a time series
+ * with cumulative points after each solve.
+ * @param users List of users to include in the data set
+ * @returns Data series mapped by its corresponding user
+ */
+async function createDataSeries(users: User[]) {
   const solvesData = await db
     .select({
       userId: solves.userId,
@@ -30,11 +29,16 @@ export async function load() {
     })
     .from(solves)
     .innerJoin(challenges, eq(solves.challengeId, challenges.id))
-    .where(inArray(solves.userId, top5Ids));
+    .where(
+      inArray(
+        solves.userId,
+        users.map((user) => user.id),
+      ),
+    );
 
   const dataSet = new Map<string, DataPoint[]>();
 
-  for (const { id: userId } of top5) {
+  for (const { id: userId } of users) {
     const solvesForUser = solvesData
       .filter((solve) => solve.userId === userId && solve.timestamp !== null)
       .sort(
@@ -57,6 +61,22 @@ export async function load() {
     dataSet.set(userId, timeSeries);
   }
 
+  return dataSet;
+}
+
+export async function load() {
+  const participants = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      points: users.points,
+    })
+    .from(users)
+    .orderBy(desc(users.points));
+
+  const top5 = participants.slice(0, 5);
+  const dataSet = await createDataSeries(top5);
+
   return {
     participants: participants
       .entries()
@@ -65,7 +85,12 @@ export async function load() {
         ...participant,
       }))
       .toArray(),
-    top5: top5,
-    dataSet: dataSet,
+    series: top5.map((user) => ({
+      name: user.name,
+      data: dataSet.get(user.id)?.map(({ timestamp, points }) => ({
+        x: timestamp,
+        y: points,
+      })),
+    })),
   };
 }

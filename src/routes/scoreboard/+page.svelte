@@ -8,14 +8,7 @@
 
   let { data } = $props();
 
-  const series: any = data.top5.map((user) => ({
-    name: user.name,
-    data: data.dataSet.get(user.id)?.map(({ timestamp, points }) => ({
-      x: timestamp,
-      y: points,
-    })),
-  }));
-
+  const series: any = data.series;
   const options: ApexOptions = {
     chart: {
       type: "line",
