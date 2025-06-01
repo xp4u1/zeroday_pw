@@ -38,7 +38,7 @@
       </div>
       <div class="grid gap-2">
         <div class="flex items-center">
-          <Label for="password">Passwort</Label>
+          <Label for="password">Password</Label>
         </div>
         <Input id="password" name="password" type="password" required />
       </div>
