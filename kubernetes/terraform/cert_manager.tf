@@ -1,3 +1,12 @@
+locals {
+  acme_servers = {
+    staging    = "https://acme-staging-v02.api.letsencrypt.org/directory"
+    production = "https://acme-v02.api.letsencrypt.org/directory"
+  }
+
+  cluster_issuer_server = local.acme_servers[var.letsencrypt_environment]
+}
+
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
   chart_version = "1.17.2"
@@ -9,8 +18,7 @@ module "cert_manager" {
   namespace_name   = "cert-manager"
   create_namespace = true
 
-  # todo: create variable
-  cluster_issuer_server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  cluster_issuer_server = local.cluster_issuer_server
 
   solvers = [
     {
