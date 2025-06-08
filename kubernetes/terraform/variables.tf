@@ -20,6 +20,17 @@ variable "letsencrypt_issuer_email" {
   type        = string
 }
 
+variable "letsencrypt_environment" {
+  description = "ACME environment: 'staging' or 'production'"
+  type        = string
+  default     = "staging"
+
+  validation {
+    condition     = contains(["staging", "production"], var.letsencrypt_environment)
+    error_message = "letsencrypt_environment must be either 'staging' or 'production'"
+  }
+}
+
 variable "namespace" {
   description = "Namespace that will be created for the zeroday platform"
   type        = string
