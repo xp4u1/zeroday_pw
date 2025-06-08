@@ -68,6 +68,10 @@ Requesting the certificates may take a few minutes. During this time, the
 Traefik proxy will temporarily use self-signed certificates. You can monitor the
 certificate status in the cluster's event log.
 
+## Screenshots
+
+![Screenshots](./.github/screenshots.png)
+
 ## Terraform Configuration
 
 Terraform variables can be declared in a persistent, declarative manner.  
