@@ -28,8 +28,6 @@ export const POST = async ({ request, locals }) => {
         : await createSession(challengeId, locals.user.id);
 
     case "terminate":
-      console.debug(`terminate for challenge: ${challengeId}`);
-
       if (!sandbox)
         return json({ message: "No active session found" }, { status: 404 });
 
