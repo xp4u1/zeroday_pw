@@ -64,8 +64,8 @@ const executeHelmCommand = (args: string[], stdin?: string) => {
       helm.stdin.end();
     }
 
-    helm.stdout.on("data", (data) => console.log(`[Helm] [INFO] ${data}`));
-    helm.stderr.on("data", (data) => console.error(`[Helm] [ERROR] ${data}`));
+    //helm.stdout.on("data", (data) => console.log(`[Helm] ${data}`));
+    helm.stderr.on("data", (data) => console.error(`[Helm] ${data}`));
 
     helm.on("close", (code) => (code == 0 ? resolve() : reject(code)));
     helm.on("error", (error) => reject(error));
