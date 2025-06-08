@@ -50,22 +50,20 @@ export const stopSandbox = async (helmName: string) => {
 };
 
 /**
- * todo: docs
- * @param args
- * @param stdin
- * @returns
+ * Execute a Helm command with optional stdin.
+ * @param args Arguments to pass to the Helm CLI
+ * @param stdin Optional input to write to Helm's stdin
+ * @returns A promise that resolves when the command succeeds, or rejects on failure
  */
 const executeHelmCommand = (args: string[], stdin?: string) => {
   return new Promise<void>((resolve, reject) => {
     const helm = spawn("helm", args);
-    console.log(stdin);
 
     if (stdin) {
       helm.stdin.write(stdin);
       helm.stdin.end();
     }
 
-    // todo: proper logging
     helm.stdout.on("data", (data) => console.log(`[Helm] [INFO] ${data}`));
     helm.stderr.on("data", (data) => console.error(`[Helm] [ERROR] ${data}`));
 
