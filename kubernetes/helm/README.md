@@ -1,24 +1,17 @@
-## Deploy zeroday.pw
+## Importing challenges
 
 ```bash
-# Start cluster
-$ minikube start --cni=calico --memory 8192 --cpus 6
+# List installed Docker images
+$ minikube image ls
 
-# Deploy using Terraform
-$ cd terraform
-$ terraform apply
+# Import local image
+$ minikube image load challenges/your_challenge
 ```
 
-## Creating challenges
+## Resource limits
 
-```bash
-# Import local images
-minikube image load challenges/your_challenge
-```
-
-### Resource limits
-
-test resource limits:
+Below are example resource configurations for different use cases. Adjust these
+values based on your challenge requirements.
 
 | Use Case                       | Example Values               |
 | ------------------------------ | ---------------------------- |
