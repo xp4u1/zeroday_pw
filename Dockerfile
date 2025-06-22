@@ -2,7 +2,7 @@
 
 FROM node:22-alpine AS builder
 
-ENV DATABASE_URL=/app/prod.db
+ENV DATABASE_URL=postgresql://dummy:password@postgres.local/database
 RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN apk add --no-cache cmake
 
@@ -17,7 +17,6 @@ RUN pnpm drizzle-kit export > build/init.sql
 
 FROM node:22-alpine AS runner
 
-ENV DATABASE_URL=/app/prod.db
 RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN apk add --no-cache sqlite helm
 
