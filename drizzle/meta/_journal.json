@@ -1,54 +1,12 @@
 {
   "version": "7",
-  "dialect": "sqlite",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "6",
-      "when": 1744138893559,
-      "tag": "0000_same_kronos",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1744228662835,
-      "tag": "0001_yummy_living_mummy",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1745263538632,
-      "tag": "0002_panoramic_thundra",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1745328878244,
-      "tag": "0003_cloudy_morlun",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1746389379917,
-      "tag": "0004_breezy_lockheed",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1746426165920,
-      "tag": "0005_silent_valkyrie",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1747775835981,
-      "tag": "0006_amused_payback",
+      "version": "7",
+      "when": 1750606416293,
+      "tag": "0000_stale_magneto",
       "breakpoints": true
     }
   ]

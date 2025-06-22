@@ -1,1 +1,0 @@
-ALTER TABLE `challenges` ADD `points` integer NOT NULL;
