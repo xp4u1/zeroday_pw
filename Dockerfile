@@ -18,7 +18,7 @@ RUN pnpm drizzle-kit export > build/init.sql
 FROM node:22-alpine AS runner
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN apk add --no-cache sqlite helm
+RUN apk add --no-cache helm
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
