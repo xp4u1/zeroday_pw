@@ -22,10 +22,7 @@ export const setupCron = async () => {
  * three hours ago.
  */
 export const garbageCollector = async () => {
-  const timestamp = DateTime.now()
-    .toUTC()
-    .minus({ hours: 3 })
-    .toFormat(timestampFormat);
+  const timestamp = DateTime.now().minus({ hours: 3 }).toJSDate();
 
   const oldSandboxes = await db
     .delete(schema.activeSandboxes)

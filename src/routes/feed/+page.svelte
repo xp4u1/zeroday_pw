@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { DateTime } from "luxon";
   import DataTable from "$lib/components/DataTable.svelte";
-  import { fromSqliteTimestamp } from "$lib/timestamp.js";
   import { createTable } from "svelte-headless-table";
   import { addSortBy } from "svelte-headless-table/plugins";
   import { readable } from "svelte/store";
@@ -12,7 +12,8 @@
   });
   const columns = table.createColumns([
     table.column({
-      accessor: ({ timestamp }) => fromSqliteTimestamp(timestamp!),
+      accessor: ({ timestamp }) =>
+        DateTime.fromJSDate(timestamp!).toFormat("yyyy-MM-dd HH:mm:ss"),
       header: "Timestamp",
     }),
     table.column({
