@@ -59,7 +59,7 @@ export const updateChallengePoints = async () => {
   const challenges = await db
     .select({
       id: schema.challenges.id,
-      solvesCount: sql<number>`count(${schema.solves.id})`,
+      solvesCount: sql<number>`count(${schema.solves.id})::int`,
     })
     .from(schema.challenges)
     .leftJoin(
