@@ -5,7 +5,6 @@ import { db } from "./db";
 import * as schema from "./db/schema";
 import { stopSandbox } from "./kubernetes";
 import { calculatePoints } from "./points";
-import { timestampFormat } from "$lib/timestamp";
 
 /**
  * Remove all existing cronjobs and create a new one
