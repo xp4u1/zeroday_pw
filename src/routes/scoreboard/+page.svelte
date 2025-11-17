@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Apexchart from "$lib/components/Apexchart.svelte";
+  import type { ApexOptions } from "apexcharts";
   import DataTable from "$lib/components/DataTable.svelte";
   import { createTable } from "svelte-headless-table";
   import { addSortBy } from "svelte-headless-table/plugins";
@@ -6,9 +8,37 @@
 
   let { data } = $props();
 
+  const series: any = data.series;
+  const options: ApexOptions = {
+    chart: {
+      type: "line",
+      height: 350,
+      zoom: { enabled: false },
+    },
+    stroke: {
+      width: 3,
+      curve: "straight",
+    },
+    xaxis: {
+      type: "datetime",
+    },
+    yaxis: {
+      min: 0,
+    },
+    tooltip: {
+      x: {
+        format: "dd.MM.yyyy HH:mm",
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+  };
+
   const table = createTable(readable(data.participants), {
     sort: addSortBy(),
   });
+
   const columns = table.createColumns([
     table.column({
       accessor: "placement",
@@ -25,4 +55,5 @@
   ]);
 </script>
 
+<Apexchart {options} {series} />
 <DataTable {table} {columns} />
