@@ -29,7 +29,6 @@
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/svelte": "^5.2.4",
-    "@types/better-sqlite3": "^7.6.12",
     "@types/dockerode": "^3.3.37",
     "@types/luxon": "^3.6.2",
     "@types/node-schedule": "^2.1.7",
@@ -59,16 +58,15 @@
     "@node-rs/argon2": "^2.0.2",
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
-    "better-sqlite3": "^11.8.0",
     "drizzle-orm": "^0.40.0",
     "lucide-svelte": "^0.487.0",
     "luxon": "^3.6.1",
     "node-schedule": "^2.1.1",
+    "postgres": "^3.4.7",
     "svelte-headless-table": "^0.18.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
       "cpu-features",
       "esbuild",
       "protobufjs",

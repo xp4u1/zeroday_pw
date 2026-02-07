@@ -5,7 +5,6 @@ import { db } from "./db";
 import * as schema from "./db/schema";
 import { stopSandbox } from "./kubernetes";
 import { calculatePoints } from "./points";
-import { timestampFormat } from "$lib/timestamp";
 
 /**
  * Remove all existing cronjobs and create a new one
@@ -22,10 +21,7 @@ export const setupCron = async () => {
  * three hours ago.
  */
 export const garbageCollector = async () => {
-  const timestamp = DateTime.now()
-    .toUTC()
-    .minus({ hours: 3 })
-    .toFormat(timestampFormat);
+  const timestamp = DateTime.now().minus({ hours: 3 }).toJSDate();
 
   const oldSandboxes = await db
     .delete(schema.activeSandboxes)
@@ -63,7 +59,7 @@ export const updateChallengePoints = async () => {
   const challenges = await db
     .select({
       id: schema.challenges.id,
-      solvesCount: sql<number>`count(${schema.solves.id})`,
+      solvesCount: sql<number>`count(${schema.solves.id})::int`,
     })
     .from(schema.challenges)
     .leftJoin(

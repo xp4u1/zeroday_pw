@@ -31,6 +31,11 @@ variable "letsencrypt_environment" {
   }
 }
 
+variable "postgres_url" {
+  description = "Connection string of the postgres database"
+  type        = string
+}
+
 variable "namespace" {
   description = "Namespace that will be created for the zeroday platform"
   type        = string

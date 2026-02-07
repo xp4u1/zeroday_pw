@@ -1,7 +1,7 @@
-import { relations, sql } from "drizzle-orm";
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
+import { pgTable, text, integer, serial, timestamp } from "drizzle-orm/pg-core";
 
-export const users = sqliteTable("users", {
+export const users = pgTable("users", {
   id: text().primaryKey(),
   name: text().unique().notNull(),
   passwordHash: text("password_hash").notNull(),
@@ -13,13 +13,13 @@ export const usersRelations = relations(users, ({ many }) => ({
   activeSandboxes: many(activeSandboxes),
 }));
 
-export const categories = sqliteTable("categories", {
-  id: integer().primaryKey(),
+export const categories = pgTable("categories", {
+  id: serial().primaryKey(),
   name: text().unique().notNull(),
 });
 
-export const challenges = sqliteTable("challenges", {
-  id: integer().primaryKey(),
+export const challenges = pgTable("challenges", {
+  id: serial().primaryKey(),
   name: text().unique().notNull(),
   description: text().notNull(),
   flag: text().notNull(),
@@ -36,11 +36,11 @@ export const challengesRelations = relations(challenges, ({ one, many }) => ({
   solves: many(solves),
 }));
 
-export const solves = sqliteTable("solves", {
-  id: integer().primaryKey(),
+export const solves = pgTable("solves", {
+  id: serial().primaryKey(),
   userId: text("user_id").notNull(),
   challengeId: integer("challenge_id").notNull(),
-  timestamp: text().default(sql`(CURRENT_TIMESTAMP)`),
+  timestamp: timestamp("timestamp").defaultNow(),
 });
 
 export const solvesRelations = relations(solves, ({ one }) => ({
@@ -54,13 +54,13 @@ export const solvesRelations = relations(solves, ({ one }) => ({
   }),
 }));
 
-export const activeSandboxes = sqliteTable("active_sandboxes", {
-  id: integer().primaryKey(),
+export const activeSandboxes = pgTable("active_sandboxes", {
+  id: serial().primaryKey(),
   helmName: text("helm_name").notNull(),
   address: text().notNull(),
   userId: text("user_id").notNull(),
   challengeId: integer("challenge_id").notNull(),
-  timestamp: text().default(sql`(CURRENT_TIMESTAMP)`),
+  timestamp: timestamp("timestamp").defaultNow(),
 });
 
 export const activeSandboxesRelations = relations(
@@ -77,12 +77,15 @@ export const activeSandboxesRelations = relations(
   }),
 );
 
-export const sessions = sqliteTable("sessions", {
+export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
 });
 
 export type User = typeof users.$inferSelect;

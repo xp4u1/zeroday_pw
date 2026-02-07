@@ -6,25 +6,6 @@ locals {
   container_port    = 3000
 }
 
-resource "kubernetes_persistent_volume_claim" "portal_database" {
-  metadata {
-    name      = "${local.app_name}-database"
-    namespace = var.namespace
-  }
-
-  spec {
-    access_modes = ["ReadWriteOnce"]
-
-    resources {
-      requests = {
-        storage = "1Gi"
-      }
-    }
-  }
-
-  depends_on = [kubernetes_namespace.zeroday_namespace]
-}
-
 resource "kubernetes_deployment" "portal" {
   metadata {
     name      = local.app_name
@@ -53,32 +34,6 @@ resource "kubernetes_deployment" "portal" {
       spec {
         service_account_name = kubernetes_service_account.portal.metadata[0].name
 
-        volume {
-          name = "database"
-
-          persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.portal_database.metadata[0].name
-          }
-        }
-
-        init_container {
-          name              = "${local.app_name}-setup"
-          image             = local.image
-          image_pull_policy = local.image_pull_policy
-
-          command = ["node", "scripts/setup.js"]
-
-          env {
-            name  = "DATABASE_URL"
-            value = "${local.app_data_path}/prod.db"
-          }
-
-          volume_mount {
-            mount_path = local.app_data_path
-            name       = "database"
-          }
-        }
-
         container {
           name              = local.app_name
           image             = local.image
@@ -90,12 +45,7 @@ resource "kubernetes_deployment" "portal" {
 
           env {
             name  = "DATABASE_URL"
-            value = "${local.app_data_path}/prod.db"
-          }
-
-          volume_mount {
-            mount_path = local.app_data_path
-            name       = "database"
+            value = var.postgres_url
           }
         }
       }
