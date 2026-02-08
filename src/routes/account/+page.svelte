@@ -27,7 +27,7 @@
     {#if data.solves.length > 0}
       <p>Completed challenges:</p>
       <ul class="list-inside list-disc">
-        {#each data.solves as solve}
+        {#each data.solves as solve (solve.id)}
           <li>{solve.challenge.name}</li>
         {/each}
       </ul>

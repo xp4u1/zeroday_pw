@@ -12,6 +12,7 @@
   const {
     table,
     columns,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }: { table: TableType<any, any>; columns: Column<any, any>[] } = $props();
   const { headerRows, pageRows, tableAttrs, tableBodyAttrs } =
     table.createViewModel(columns);
@@ -20,7 +21,7 @@
 <div class="rounded-md border">
   <Table.Root {...$tableAttrs}>
     <Table.Header>
-      {#each $headerRows as headerRow}
+      {#each $headerRows as headerRow (headerRow.id)}
         <Subscribe rowAttrs={headerRow.attrs()}>
           <Table.Row>
             {#each headerRow.cells as cell (cell.id)}
@@ -39,7 +40,7 @@
                       variant="ghost"
                       on:click={props.sort.toggle}
                     >
-                      <ArrowUpDown class={"h-4 w-4"} />
+                      <ArrowUpDown class="h-4 w-4" />
                     </Button>
                   {/if}
                 </Table.Head>

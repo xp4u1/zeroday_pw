@@ -11,9 +11,9 @@ export const calculatePoints = (
   if (solvesCount > usersCount)
     throw Error("solvesCount cannot be greater than usersCount");
 
-  let multiplicator =
+  const multiplicator =
     (Math.E - Math.E ** 0.2) / (1 - Math.E ** -0.8 / usersCount);
-  let granted_points =
+  const granted_points =
     500 *
     (Math.log(Math.E - multiplicator * (solvesCount / usersCount)) +
       (1 - Math.log(Math.E - multiplicator / usersCount)));

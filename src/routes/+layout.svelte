@@ -38,7 +38,7 @@
           <span class="sr-only">zeroday.pw</span>
         </a>
 
-        {#each links as { name, href }}
+        {#each links as { name, href } (href)}
           <a
             {href}
             class={`${page.url.pathname.startsWith(href) ? "text-foreground" : "text-muted-foreground"} hover:text-foreground transition-colors`}
