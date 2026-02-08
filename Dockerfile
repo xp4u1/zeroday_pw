@@ -26,7 +26,6 @@ RUN pnpm install --prod
 
 COPY --from=builder /app/kubernetes ./kubernetes
 COPY --from=builder /app/build ./build
-COPY --from=builder /app/scripts ./scripts
 
 EXPOSE 3000
 
